@@ -1,4 +1,4 @@
-import User from "../models/user.model";
+import User from "../models/user.model.js";
 
 const handleUserSignUp = async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -12,10 +12,8 @@ const handleUserSignUp = async (req, res, next) => {
 
     res.status(200).json({
       success: true,
-      message: "Reservation Sent Successfully!",
+      message: "User Sent Successfully!",
     });
-
-    return res.render("home");
   } catch (error) {
     res.send(error);
     console.log("res.send(error.message)", error);
