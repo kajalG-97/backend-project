@@ -2,9 +2,10 @@ import express from "express";
 import mongoose from "mongoose";
 import { DBConnection } from "../database/DBConnection.js";
 import { errorMiddleware } from "./error/error.js";
-import authRouter from "./routes/user.route.js";
+import userRouter from "./routes/user.route.js";
 import reservationRouter from "./routes/reservation.route.js";
 import dotenv from "dotenv";
+import { login, register } from "./controllers/auth.controller.js";
 
 const app = express();
 
@@ -24,7 +25,9 @@ app.get("/", (req, res) => {});
 
 // controllers
 app.use("/api/v1/reservation", reservationRouter);
-app.use("/api/v1/user", authRouter);
+app.use("/api/v1/users", userRouter);
+app.post("/api/v1/login", login);
+app.post("/api/v1/register", register);
 
 app.use((err, req, res, next) => {
   errorMiddleware({ message: err.message, status: err.status }, req, res, next);
