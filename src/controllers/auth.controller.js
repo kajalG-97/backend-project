@@ -3,7 +3,21 @@ import { validationResult } from "express-validator";
 import User from "../models/user.model.js";
 
 const newToken = (user) => {
-  return jwt.sign({ user }, `${process.env.JWT_SECRET_KEY}`);
+  return jwt.sign({ user }, process.env.JWT_SECRET_KEY);
+};
+
+export const generateToken = (payload, expiryTime = "10d", extra = {}) => {
+  try {
+    const token = jwt.sign(
+      { userId: payload, ...extra },
+      process.env.JWT_SECRET_KEY,
+      { expiresIn: expiryTime }
+    );
+    return token;
+  } catch (error) {
+    console.error("token creation failed", error);
+    throw error;
+  }
 };
 
 export const register = async (req, res) => {
@@ -12,7 +26,6 @@ export const register = async (req, res) => {
     if (!errors.isEmpty()) {
       let newErrors;
       newErrors = errors.array().map((err) => {
-        console.log("err", err);
         return { key: err.param, message: err.msg };
       });
       return res.status(400).send({ errors: newErrors });
@@ -38,7 +51,6 @@ export const login = async (req, res) => {
     if (!errors.isEmpty()) {
       let newErrors;
       newErrors = errors.array().map((err) => {
-        console.log("err", err);
         return { key: err.param, message: err.msg };
       });
       return res.status(400).send({ errors: newErrors });

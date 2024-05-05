@@ -1,9 +1,8 @@
-// require("dotenv").config();
 import jwt from "jsonwebtoken";
 
 const verifyToken = (token) => {
   return new Promise((resolve, reject) => {
-    jwt.verify(token, `${process.env.JWT_SECRET_KEY}`, (err, user) => {
+    jwt.verify(token, process.env.JWT_SECRET_KEY, (err, user) => {
       if (err) return reject(err);
 
       resolve(user);
@@ -11,7 +10,7 @@ const verifyToken = (token) => {
   });
 };
 
-module.exports = async (req, res, next) => {
+export const authorizationMiddleware = async (req, res, next) => {
   if (!req.headers.authorization)
     return res.status(400).send({
       message: "authorization token was not provided or was not valid",
@@ -28,6 +27,7 @@ module.exports = async (req, res, next) => {
   try {
     user = await verifyToken(token);
   } catch (err) {
+    next(err);
     return res.status(400).send({
       message: "authorization token was not provided or was not valid",
     });
